@@ -1,0 +1,18 @@
+.gradle/
+.kotlin/
+**/build/
+.tools/
+local.properties
+.idea/
+*.jks
+*.keystore
+captures/
+# Local packages and reference-analysis artifacts
+/deliverables/
+/docs/evidence/apk-*
+/docs/evidence/early-screenshots/
+.env
+.env.*
+!.env.example
+*.apk
+*.aab

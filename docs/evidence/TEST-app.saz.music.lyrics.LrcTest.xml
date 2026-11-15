@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="app.saz.music.lyrics.LrcTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-15T12:49:35.669Z" hostname="WIN-SC4BSGH2CQG" time="0.085">
+  <properties/>
+  <testcase name="repeatedTimestampsOffsetsAndFractions" classname="app.saz.music.lyrics.LrcTest" time="0.081"/>
+  <testcase name="staticLyricsAndInvalidTextHaveNoTimestamps" classname="app.saz.music.lyrics.LrcTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+# Meander refinement
+
+User selected concept 1 (Meander) and requested a more attractive refinement. This preview preserves the intertwined calligraphic S, adds satin violet coloring on midnight, and reduces the wordmark size. Generated with the built-in image-generation tool using concepts-v2/01-meander.png as the edit target.
+
+Saved preview: meander-refined.png. Visually reviewed for continuity with the selected direction and readable wordmark. Final refinement approval pending. Raster preview only; fine tips and central crossing still require vector optical adjustment and launcher-size testing. Not a finished adaptive icon.
+
+## Exact prompt
+
+Use case: logo-brand refinement. Edit the supplied Saz Meander concept board. User has selected this direction but wants it more attractive. Preserve its identity: two intertwined calligraphic ribbons forming a graceful S, refined lowercase serif "saz" wordmark. Improve the actual geometry: cleaner flowing curves, balanced upper/lower sweeps, controlled elegant taper with slightly stronger fine tips, precise central crossing separated by a crisp negative-space gap. Make it feel like a meticulously drawn premium music identity. Do not replace it with a generic S, infinity symbol, chunky swoosh, or ornate crest. Keep the silhouette recognizable in monochrome.
+Create a beautifully art-directed square presentation. Main upper 75 percent: deep midnight #111318 background, large but gracefully spaced S symbol with subtle luminous satin violet shading (#B9A2F6 through muted lavender to pale lilac), almost flat dimensional treatment confined to the ribbon itself, no glow cloud, no chrome or plastic, no exaggerated 3D. Beneath, a refined warm ivory lowercase "saz" wordmark, smaller relative to the symbol than the original, optically spaced and custom-looking. No heading or concept number. Bottom 25 percent: quiet warm ivory horizontal panel displaying two small supporting examples with lots of breathing room: a dark rounded-square Android-style icon containing the same refined violet S; and the exact same S as a single solid dark-ink silhouette. Tiny tasteful label "MEANDER / REFINED" in the bottom margin only. Crisp clean edges, no grain, no scene mockups, no extra decorations, no music notes, no headphones. This is a refined concept preview, not a screenshot of a finished app.
+
