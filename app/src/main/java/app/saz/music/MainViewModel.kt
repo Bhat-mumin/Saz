@@ -9,6 +9,9 @@ import app.saz.music.library.LibraryRepository
 import app.saz.music.playback.PlaybackConnection
 import app.saz.music.settings.Preferences
 import app.saz.music.settings.Settings
+import app.saz.music.providers.LocalMusicProvider
+import app.saz.music.providers.LrclibProvider
+import app.saz.music.providers.ProviderResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
@@ -19,19 +22,23 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(val library: LibraryRepository, val playback: PlaybackConnection,
     val preferences: Preferences, private val backup: app.saz.music.backup.BackupRepository,
     private val lyricsRepository: app.saz.music.lyrics.LyricsRepository,
+    private val localProvider: LocalMusicProvider, private val onlineLyrics: LrclibProvider,
     @ApplicationContext private val context: Context) : ViewModel() {
-    val tracks = library.dao.tracks().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val tracks = localProvider.tracks.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val playlists = library.dao.playlists().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val entries = library.dao.entries().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val settings = preferences.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Settings())
     val busy = MutableStateFlow(false)
     val message = MutableStateFlow<String?>(null)
     val lyricText = MutableStateFlow("")
+    val lyricsSource = MutableStateFlow("")
     init {
         viewModelScope.launch {
             playback.state.map { it.uri }.distinctUntilChanged().collectLatest { uri ->
                 lyricText.value = ""
+                lyricsSource.value = ""
                 if (uri != null) lyricText.value = try { lyricsRepository.read(uri) } catch (_: java.io.IOException) { "" }
+                if (lyricText.value.isNotBlank()) lyricsSource.value = "Imported lyrics"
             }
         }
     }
@@ -59,6 +66,17 @@ class MainViewModel @Inject constructor(val library: LibraryRepository, val play
     fun motion(value: Boolean) = work { preferences.reducedMotion(value) }
     fun export(uri: Uri) = work { backup.export(uri); message.value = "Backup saved" }
     fun restore(uri: Uri) = work { message.value = "Merged ${backup.restore(uri)} tracks. Re-import files if access needs to be restored." }
+    fun findLyrics() = work {
+        val uri = playback.state.value.uri ?: error("Choose a local song first.")
+        val track = library.dao.track(uri) ?: error("This song is not in your library.")
+        when (val result = withContext(Dispatchers.IO) { onlineLyrics.find(track.title, track.artist, track.durationMs) }) {
+            is ProviderResult.Failure -> message.value = result.problem.message
+            is ProviderResult.Success -> if (playback.state.value.uri == uri) {
+                lyricText.value = if (result.value.instrumental) "Instrumental recording" else result.value.text
+                lyricsSource.value = "LRCLIB · " + if (result.value.synchronized) "synchronized lyrics" else "no synchronized lyrics available"
+            }
+        }
+    }
     fun lyrics(uri: Uri) = work {
         val trackUri = playback.state.value.uri ?: error("Choose a song first")
         val text = withContext(Dispatchers.IO) {
@@ -75,6 +93,6 @@ class MainViewModel @Inject constructor(val library: LibraryRepository, val play
             } ?: error("Could not read lyrics")
         }
         lyricsRepository.save(trackUri, text)
-        if (playback.state.value.uri == trackUri) lyricText.value = text
+        if (playback.state.value.uri == trackUri) { lyricText.value = text; lyricsSource.value = "Imported lyrics" }
     }
 }

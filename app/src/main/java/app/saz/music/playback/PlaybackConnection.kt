@@ -48,6 +48,7 @@ data class PlaybackState(val connected: Boolean = false, val uri: String? = null
         controller?.apply { setMediaItems(tracks.map { it.item() }, index.coerceIn(tracks.indices), 0); prepare(); play() }
     }
     fun toggle() { controller?.apply { if (isPlaying) pause() else { if (playerError != null) prepare(); play() } } }
+    fun pause() { controller?.pause() }
     fun next() { controller?.seekToNextMediaItem() }
     fun previous() { controller?.seekToPrevious() }
     fun seek(position: Long) { controller?.seekTo(position) }

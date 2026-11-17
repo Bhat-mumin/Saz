@@ -1,15 +1,17 @@
 # Saz
 
-A native, offline-first Android music player with a Kashmir-inspired violet glass interface.
+A native, offline-first Android music player with the approved Walnut visual direction.
 
-**Current delivery: 0.1.0 local-player preview.** The approved rounded glass icon and scenic UI direction are implemented. This is a working app, with real Media3 playback, a Room library, playlists, favorites, imported lyrics and metadata backup. Streaming integrations and production acceptance remain unfinished.
+**Current delivery: 0.1.0 provider-integration preview.** The Walnut Compose interface is implemented; the existing launcher icon is retained. This is a working app, with real Media3 playback, a Room library, playlists, favorites, imported lyrics and metadata backup. YouTube public discovery/playlist browsing and visible playback, Audius free-download discovery, authorized downloads and on-demand lyrics are implemented. Private account connections and production acceptance remain unfinished.
 
-- [Installable debug APK](deliverables/Saz-0.1.0-debug.apk)
+- [Download the APK from Releases](https://github.com/Bhat-mumin/Saz/releases) — choose `Saz-debug.apk`, no ZIP extraction
 - [Actual app screenshots](docs/screenshots)
 - [Build and API setup](docs/SETUP.md)
 - [Implemented features and limitations](docs/IMPLEMENTATION.md)
-- [Verification results](docs/TEST_RESULTS.md)
+- [Provider verification](docs/PROVIDER_TEST_RESULTS.md) and [Walnut visual review](docs/WALNUT_REVIEW.md)
 - [Roadmap](docs/ROADMAP.md)
+- [New visual direction proposals](docs/design-exploration/README.md) — Walnut approved
+- [Provider integration progress](docs/INTEGRATIONS.md) — provider capabilities, free downloads and remaining account work
 - [Privacy](docs/PRIVACY.md) and [backup format](docs/BACKUP.md)
 - [Architecture and reference analysis](docs/FEASIBILITY.md)
 
@@ -19,6 +21,8 @@ The debug APK under deliverables/ and proprietary reference-analysis artifacts a
 
 ## GitHub APK builds
 
-Every push and pull request runs the Android build, JVM tests and lint. You can also select **Actions → Build Android APK → Run workflow**. Open a successful run and download **Saz-debug-<run number>** from **Artifacts**; unzip it to get `Saz-debug.apk` and its SHA-256 checksum. Downloads require GitHub access to this private repository and expire after 30 days.
+Every push and pull request runs the Android build, JVM tests and lint. Successful branch pushes and manual runs then publish **Saz-debug.apk** as a GitHub Release asset. Open [Releases](https://github.com/Bhat-mumin/Saz/releases) and select **Saz-debug.apk**. The APK is also uploaded directly to Actions with archive wrapping disabled. GitHub's automatically generated source ZIP files are not the app.
 
-These are installable debug builds, not owner-signed production releases. APKs remain excluded from source control by `.gitignore`; the workflow uploads them separately as build artifacts. The `.gitignore` file itself is intentionally tracked so all clones use the same exclusions.
+The publishing job runs only after the build/check job succeeds and never for pull requests. `SAZ_PREVIEW_KEYSTORE` is an encrypted Actions secret holding a stable debug signing identity, so subsequent previews can update the same app. It is not a production signing key. API credentials are never embedded in the APK or committed. This private repository requires appropriate GitHub access to download releases.
+
+Saz adds no advertising and has no paid feature tier. Local and downloaded audio plays ad-free. Optional YouTube playback is controlled by YouTube and may show its ads; Saz does not remove them. No free supported provider guarantees every commercial release or unrestricted downloads.

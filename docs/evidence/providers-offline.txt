@@ -1,0 +1,11 @@
+
+app.saz.music.ProviderContractTest:.......
+app.saz.music.MusicHandoffTest:..
+app.saz.music.PlaybackSmokeTest:.
+app.saz.music.LibraryPersistenceTest:.
+
+Time: 27.978
+
+OK (11 tests)
+
+

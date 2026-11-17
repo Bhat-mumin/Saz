@@ -29,7 +29,7 @@ Debug output: `app/build/outputs/apk/debug/app-debug.apk`. `adb install -r` inst
 5. Player includes queue, shuffle/repeat, speed, sleep timer, static ambient view and LRC/plain-text import.
 6. Backup in Settings exports Saz metadata as JSON. Import merges tracks and creates imported playlists. Audio files and URI grants are not included; re-import files after moving devices.
 
-The UI uses original scenic art, translucent violet surfaces and platform blur in the full player and lyrics. Performance mode omits those blur effects. Automatic graphics calibration and measured frame-rate targets remain unverified.
+The UI uses the approved Walnut design with bundled OFL fonts and opaque Compose surfaces. Automatic graphics calibration and measured frame-rate targets remain unverified.
 
 ## Release configuration
 
@@ -37,7 +37,7 @@ The release variant enables R8 and resource shrinking. It is intentionally unsig
 
 ## External integrations
 
-No API keys or accounts are included. Spotify/YouTube are explicitly unavailable in this local-player build, not simulated.
+No API keys or accounts are bundled. Public YouTube discovery/playlists and visible playback are implemented; Spotify is an external handoff. See the current provider setup below.
 
 - Spotify requires an eligible developer application, registered redirect URI, authorized users/scopes, PKCE implementation and installed Spotify for App Remote. Validate the current developer-mode limitations against the account before implementation. Saz does not extract Spotify audio.
 - YouTube discovery requires an API project and appropriately restricted API configuration. Playback must use an approved visible player or official-app handoff; no background audio extraction.
@@ -47,3 +47,17 @@ No API keys or accounts are included. Spotify/YouTube are explicitly unavailable
 
 JVM tests exercise LRC parsing. Android tests create their own PCM WAV audio and use a real MediaController/ExoPlayer session; library tests verify Room merge behavior and backup rejection. They do not require a streaming account. Emulator results do not establish physical-device audio quality, Bluetooth behavior, battery life or 60 FPS performance.
 
+
+## Walnut provider preview (16 November 2026)
+
+The current build uses the approved Walnut native Compose design. No API credentials are bundled. Settings > YouTube discovery > Import key file accepts the developer-provided key file and stores the key using Android Keystore encryption. Enable YouTube Data API v3 and restrict the key to app.saz.music and the preview certificate SHA-1 below. Search supports public music discovery and public/unlisted playlist links; private account OAuth is not connected.
+
+Search > Free downloads queries Audius without a paid plan or bundled key. Only artist-enabled, ungated downloads are shown. Save uses Wi-Fi; then open Settings > Download audio > Import completed audio. Direct permitted HTTPS audio links are also supported. Local playback is ad-free. Optional YouTube playback may contain provider ads.
+
+Local player lyrics can be requested from LRCLIB. Synchronized lines are used only when supplied timestamps match the recording duration; otherwise plain or missing lyrics are clearly indicated.
+
+## Direct GitHub APK delivery
+
+Successful branch builds publish Saz-debug.apk as a Release asset and upload the individual APK to Actions with archive wrapping disabled. Download the APK, not GitHub's automatic source archives. Publishing requires the configured encrypted SAZ_PREVIEW_KEYSTORE repository secret. Preview certificate SHA-1: 35:74:D1:BA:27:54:A3:29:E4:E8:8F:51:89:4E:C4:89:C6:A3:33:90. This is public certificate identity, not private signing material. Pull requests are built and checked but are not published.
+
+Live checks are opt-in: install app and test APKs, configure the YouTube key on the test device, and run LiveProviderSmokeTest with instrumentation argument -e liveProviders true. Never put keys in source or command arguments. See PROVIDER_TEST_RESULTS.md for current results, and PROVIDERS.md for account credentials still needed.

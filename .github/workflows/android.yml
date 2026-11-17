@@ -26,6 +26,15 @@ jobs:
           cache: gradle
       - name: Install Android SDK packages
         run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;35.0.0"'
+      - name: Restore stable preview signing identity
+        if: github.event_name != 'pull_request'
+        env:
+          PREVIEW_KEYSTORE: ${{ secrets.SAZ_PREVIEW_KEYSTORE }}
+        run: |
+          test -n "$PREVIEW_KEYSTORE" || { echo "Configure SAZ_PREVIEW_KEYSTORE before publishing APKs."; exit 1; }
+          mkdir -p "$HOME/.android"
+          printf '%s' "$PREVIEW_KEYSTORE" | base64 --decode > "$HOME/.android/debug.keystore"
+          chmod 600 "$HOME/.android/debug.keystore"
       - name: Build and check
         run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug --no-daemon --console=plain
       - name: Prepare APK download
@@ -37,8 +46,8 @@ jobs:
       - name: Upload installable debug APK
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: Saz-debug-${{ github.run_number }}
-          path: apk/
+          path: apk/Saz-debug.apk
+          archive: false
           if-no-files-found: error
           retention-days: 30
       - name: Upload test and lint reports
@@ -50,3 +59,27 @@ jobs:
             app/build/reports/
             app/build/test-results/
           retention-days: 14
+
+  publish-apk:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref_type == 'branch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: Saz-debug.apk
+          path: apk
+      - name: Publish the APK as a direct Release download
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cd apk
+          sha256sum Saz-debug.apk > SHA256.txt
+          tag="preview-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+          printf 'Install Saz-debug.apk directly. No ZIP extraction is needed.\n\nDebug preview built from commit %s. Provider credentials are not bundled.\n' "$GITHUB_SHA" > notes.md
+          gh release create "$tag" Saz-debug.apk SHA256.txt --target "$GITHUB_SHA" --title "Saz preview ${GITHUB_RUN_NUMBER}" --notes-file notes.md --prerelease
+          printf '### Install Saz\n\n[Download Saz-debug.apk](https://github.com/%s/releases/download/%s/Saz-debug.apk)\n' "$GH_REPO" "$tag" >> "$GITHUB_STEP_SUMMARY"
